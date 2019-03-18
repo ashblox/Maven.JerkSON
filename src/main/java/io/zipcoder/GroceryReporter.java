@@ -95,16 +95,6 @@ public class GroceryReporter {
         }
     }
 
-    public static void main(String[] args) {
-        GroceryReporter gp = new GroceryReporter("");
-        List<Double> test = new ArrayList<>();
-        test.add(0.0);
-        test.add(0.2);
-        test.add(0.2);
-        System.out.println(gp.formatItemBlock("hello", test));
-        System.out.println(gp.formatWithMultiplePrices(test));
-    }
-
     public Map<String, List<Double>> mapFrequencies(List<Item> items) {
         Map<String, List<Double>> frequencies = new LinkedHashMap<>();
         for (Item item : items) {

@@ -34,17 +34,9 @@ public class ItemParser {
         return items;
     }
 
-    public static void main(String[] args) {
-        ItemParser itemParser = new ItemParser();
-        List<Item> items = itemParser.parseItemList("naMe:Milk;price:3.23;type:Food;expiration:1/25/2016##");
-        for (Item i : items) {
-            System.out.println(i.toString());
-        }
-    }
-
     public Item parseSingleItem(String singleItem) throws ItemParseException {
         String strPattern = "(\\w+)[;*:,@^%!](\\w+)[;*:,@^%!](\\w+)[;*:,@^%!](\\d.{3,4})[;*:,@^%!](\\w+)[;*:,@^%!](\\w+)" +
-                "[;*:,@^%!](\\w+)[;*:,@^%!](\\d{1,2}/\\d{1,2}/\\d{4})";
+                "[;*:,@^%!](\\w+)[;*:,@^%!](\\d{1,2}/\\d{1,2}/\\d{4}).*";
         Pattern pattern = Pattern.compile(strPattern);
         Matcher matcher = pattern.matcher(singleItem);
         try {
