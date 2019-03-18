@@ -10,19 +10,26 @@ import java.util.regex.Pattern;
 
 public class ItemParser {
 
-    public List<Item> parseItemList(String valueToParse) {
-        String strPattern = "(\\w+)[;*:,@^%](\\w+)[;*:,@^%](\\w+)[;*:,@^%](\\d.{3,4})[;*:,@^%](\\w+)[;*:,@^%](\\w+)" +
-                "[;*:,@^%](\\w+)[;*:,@^%](\\d{1,2}/\\d{1,2}/\\d{4})(##)";
-        Pattern pattern = Pattern.compile(strPattern);
-        Matcher matcher = pattern.matcher(valueToParse);
-        List<Item> items = new ArrayList<>();
-        for (int i = 0; matcher.find(); i++) {
-            String name = matcher.group(2).toLowerCase();
-            Double price = Double.valueOf(matcher.group(4));
-            String type = matcher.group(6).toLowerCase();
-            String expDate = matcher.group(8);
+    private int exceptionCount;
 
-            items.add(new Item(name, price, type, expDate));
+    public ItemParser() {
+        this.exceptionCount = 0;
+    }
+
+    public int getExceptionCount() {
+        return exceptionCount;
+    }
+
+    public List<Item> parseItemList(String valueToParse) {
+        String[] strArray = valueToParse.split("##");
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < strArray.length; i++) {
+            try {
+                items.add(parseSingleItem(strArray[i]));
+            } catch (Exception e) {
+                exceptionCount ++;
+                System.out.println("Failed to add item to list (invalid).");
+            }
         }
         return items;
     }
@@ -36,7 +43,26 @@ public class ItemParser {
     }
 
     public Item parseSingleItem(String singleItem) throws ItemParseException {
-        List<Item> items = parseItemList(singleItem);
-        return items.get(0);
+        String strPattern = "(\\w+)[;*:,@^%!](\\w+)[;*:,@^%!](\\w+)[;*:,@^%!](\\d.{3,4})[;*:,@^%!](\\w+)[;*:,@^%!](\\w+)" +
+                "[;*:,@^%!](\\w+)[;*:,@^%!](\\d{1,2}/\\d{1,2}/\\d{4})";
+        Pattern pattern = Pattern.compile(strPattern);
+        Matcher matcher = pattern.matcher(singleItem);
+        try {
+            matcher.matches();
+            String name = matcher.group(2).toLowerCase();
+            if (name.contains("0")) {
+                name = name.replace('0', 'o');
+            }
+            Double price = Double.valueOf(matcher.group(4));
+            String type = matcher.group(6).toLowerCase();
+            String expDate = matcher.group(8);
+            return new Item(name, price, type, expDate);
+        } catch (Exception e) {
+            throw new ItemParseException();
+        }
+    }
+
+    public String convertZerosToOs(String str) {
+        return str.replace('0', 'o');
     }
 }
